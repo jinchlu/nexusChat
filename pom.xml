@@ -15,11 +15,13 @@
     <!-- ==================== Java + JavaFX ==================== -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
+        <maven.compiler.release>25</maven.compiler.release>
         <enablePreview>true</enablePreview>
         <javafx.version>25.0.1</javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+        <main.class>com.nexuschat.NexusChatApp</main.class>
+        <!-- 让 IntelliJ 读取 Maven 配置的 VM options -->
+        <idea.executable.enable-preview>--enable-preview</idea.executable.enable-preview>
     </properties>
 
     <dependencies>
@@ -78,8 +80,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <release>${maven.compiler.release}</release>
                     <compilerArgs>
                         <arg>--enable-preview</arg>
                     </compilerArgs>
@@ -96,15 +97,118 @@
                 </configuration>
             </plugin>
 
-            <!-- JavaFX 打包运行 -->
+            <!--
+                JavaFX 运行（两种启动方式，IntelliJ 会自动识别）：
+                ① mvn javafx:run   → 推荐，自动加 module-path
+                ② mvn exec:java    → 备用，也会加载 JavaFX
+            -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>${javafx.maven.plugin.version}</version>
                 <configuration>
-                    <mainClass>com.nexuschat.NexusChatApp</mainClass>
+                    <mainClass>${main.class}</mainClass>
                 </configuration>
             </plugin>
+
+            <!-- exec-maven-plugin：备用启动方式，IntelliJ 直接点 main 时也需要 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <mainClass>${main.class}</mainClass>
+                    <jvmArgs>
+                        <jvmArg>--enable-preview</jvmArg>
+                    </jvmArgs>
+                </configuration>
+            </plugin>
+
+            <!--
+                maven-jar-plugin: 给 target/nexuschat.jar 加上正确的 manifest,
+                使 java -jar target/nexuschat.jar 能找到主类.
+                注意: JavaFX 模块运行时仍需 module-path 参数.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>${main.class}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!--
+                maven-dependency-plugin: 把所有依赖 (含 JavaFX jars) 拷到 target/lib/.
+                这样 mvn package 后, 目录结构是:
+                  target/
+                    nexuschat.jar
+                    lib/javafx-controls-25.0.1-mac.jar
+                    lib/javafx-fxml-25.0.1-mac.jar
+                    lib/javafx-base-25.0.1-mac.jar
+                    lib/javafx-graphics-25.0.1-mac.jar
+                    lib/sqlite-jdbc-3.47.1.0.jar
+                    lib/gson-2.10.1.jar
+                    lib/slf4j-api-2.0.16.jar
+                    lib/logback-classic-1.5.12.jar
+                    ...
+                之后 java -jar target/nexuschat.jar 时会自动从 lib/ 找依赖.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <stripVersion>false</stripVersion>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
+        <!-- 快捷命令：mvn spring-boot:run 风格的 nexuschat:run -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-maven-plugin</artifactId>
+                    <version>${javafx.maven.plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
+
+    <!--
+        ==================== 启动说明（重要！）====================
+
+        [OK] IntelliJ 里启动（不需要改任何 IDE 配置）:
+             右键 NexusChatApp.java -> Run / Debug
+             IntelliJ 2024.3+ 会自动识别 javafx-maven-plugin 配置,
+             自动把 JavaFX 模块加到 module-path 上.
+
+        [OK] 命令行启动:
+             mvn javafx:run              (推荐)
+             mvn exec:java               (备用)
+
+        [X] 千万不要用:
+             java -jar target/nexuschat.jar
+             直接 java 命令会报 "缺少 JavaFX 运行时组件"
+             因为 Java 11+ JavaFX 不再内置在 JDK 里, 必须显式加 module-path 参数.
+    -->
 </project>

@@ -21,7 +21,7 @@
                 <Label text="👥 好友列表" style="-fx-text-fill: white; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
                 <Button fx:id="addFriendBtn" text="➕" style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
             </HBox>
-            <Divider style="-fx-background-color: #7f8c8d; -fx-padding: 5px 0;"/>
+            <Separator style="-fx-background-color: #7f8c8d; -fx-padding: 5px 0;"/>
             <ListView fx:id="contactList" VBox.vgrow="ALWAYS"
                       style="-fx-control-inner-background: #34495e; -fx-background: #34495e;"/>
         </VBox>

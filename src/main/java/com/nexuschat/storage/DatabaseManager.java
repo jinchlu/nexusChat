@@ -106,15 +106,14 @@ public class DatabaseManager {
 
     /**
      * 建目录 + 建 10 张表（CREATE TABLE IF NOT EXISTS 天然幂等，可重复执行）。
+     * 直接用 ThreadLocal Connection，不额外新开。
      */
     public static synchronized void initSchema() throws SQLException {
         new File(DATA_DIR).mkdirs();
         log.info("初始化 SQLite Schema: {}", DB_PATH);
 
-        try (Connection conn = DriverManager.getConnection(JDBC_URL);
-             Statement stmt = conn.createStatement()) {
-
-            // ── 10 张表 ──
+        Connection conn = getConnection();
+        try (Statement stmt = conn.createStatement()) {
             stmt.execute(SqlConstants.APP_CONFIG_CREATE);
             stmt.execute(SqlConstants.CONTACTS_CREATE);
             stmt.execute(SqlConstants.CONTACT_GROUPS_CREATE);
@@ -126,7 +125,7 @@ public class DatabaseManager {
             stmt.execute(SqlConstants.GROUP_MEMBERS_CREATE);
             stmt.execute(SqlConstants.GROUP_LEADER_LEDGER_CREATE);
 
-            // ── app_config 初始数据（INSERT OR IGNORE 防重复）──────────────
+            // app_config 初始数据（INSERT OR IGNORE 防重复）
             long now = System.currentTimeMillis();
             stmt.execute(SqlConstants.APP_CONFIG_INIT.formatted(now, now, now, now, now));
         }
