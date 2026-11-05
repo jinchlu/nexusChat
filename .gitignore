@@ -1,0 +1,11 @@
+# Project exclude paths
+/target/
+
+# jpackage 三平台原生包（自带 JRE，体积大，由 scripts/ 在各平台本地构建）
+/release/CleanMavenCache-*/
+
+# 开发工具本地配置
+/.idea/
+/.vscode/
+/.Ds_store/
+.DS_Store
