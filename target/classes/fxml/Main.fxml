@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.nexuschat.MainController"
+      prefHeight="600.0" prefWidth="900.0">
+
+    <!-- 顶部状态栏 -->
+    <Label fx:id="topBar" text="🔌 加载中..." style="-fx-background-color: #2c3e50; -fx-text-fill: white; -fx-padding: 10px; -fx-font-weight: bold;" VBox.vgrow="NEVER"/>
+
+    <!-- 主区域：左侧联系人 + 右侧聊天 -->
+    <HBox HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+
+        <!-- 左侧：联系人列表 -->
+        <VBox style="-fx-background-color: #34495e; -fx-padding: 8px;" prefWidth="200">
+            <HBox spacing="5">
+                <Label text="👥 好友列表" style="-fx-text-fill: white; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="addFriendBtn" text="➕" style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+            </HBox>
+            <Divider style="-fx-background-color: #7f8c8d; -fx-padding: 5px 0;"/>
+            <ListView fx:id="contactList" VBox.vgrow="ALWAYS"
+                      style="-fx-control-inner-background: #34495e; -fx-background: #34495e;"/>
+        </VBox>
+
+        <!-- 右侧：聊天区 -->
+        <VBox HBox.hgrow="ALWAYS" style="-fx-padding: 10px;">
+            <TextArea fx:id="chatArea" editable="false" wrapText="true"
+                      VBox.vgrow="ALWAYS"
+                      style="-fx-font-family: Menlo, monospace; -fx-font-size: 13px;"/>
+
+            <!-- 输入区 -->
+            <HBox spacing="8" style="-fx-padding-top: 8px;">
+                <TextField fx:id="inputField" promptText="输入消息，Enter 发送..." HBox.hgrow="ALWAYS"/>
+                <Button fx:id="sendBtn" text="发送" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            </HBox>
+        </VBox>
+    </HBox>
+
+    <!-- 底部状态栏 -->
+    <Label fx:id="statusLabel" text="就绪" style="-fx-background-color: #2c3e50; -fx-text-fill: #ecf0f1; -fx-padding: 5px 10px;" VBox.vgrow="NEVER"/>
+</VBox>
