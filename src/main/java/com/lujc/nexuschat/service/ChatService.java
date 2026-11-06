@@ -11,7 +11,6 @@ import com.lujc.nexuschat.network.P2PNode;
 import com.lujc.nexuschat.network.PeerConnection;
 import com.lujc.nexuschat.protocol.Frame;
 import com.lujc.nexuschat.storage.*;
-import com.nexuschat.storage.*;
 import com.lujc.nexuschat.util.DeviceIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
