@@ -7,7 +7,7 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.lujc.nexuschat.MainController"
-      prefHeight="600.0" prefWidth="900.0">
+      prefHeight="640.0" prefWidth="940.0">
 
     <!-- 顶部状态栏 -->
     <Label fx:id="topBar" text="🔌 加载中..." style="-fx-background-color: #2c3e50; -fx-text-fill: white; -fx-padding: 10px; -fx-font-weight: bold;" VBox.vgrow="NEVER"/>
@@ -16,7 +16,7 @@
     <HBox HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
 
         <!-- 左侧：联系人列表 -->
-        <VBox style="-fx-background-color: #34495e; -fx-padding: 8px;" prefWidth="200">
+        <VBox style="-fx-background-color: #34495e; -fx-padding: 8px;" prefWidth="210">
             <HBox spacing="5">
                 <Label text="👥 好友列表" style="-fx-text-fill: white; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
                 <Button fx:id="addFriendBtn" text="➕" style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
@@ -28,12 +28,25 @@
 
         <!-- 右侧：聊天区 -->
         <VBox HBox.hgrow="ALWAYS" style="-fx-padding: 10px;">
-            <TextArea fx:id="chatArea" editable="false" wrapText="true"
-                      VBox.vgrow="ALWAYS"
-                      style="-fx-font-family: Menlo, monospace; -fx-font-size: 13px;"/>
+
+            <!-- 消息流：ScrollPane + VBox，支持文字 / 图片缩略图 / 文件卡片 -->
+            <ScrollPane fx:id="chatScroll" fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background: #fafafa; -fx-border-color: #dcdde1;">
+                <content>
+                    <VBox fx:id="messageBox" spacing="6" style="-fx-padding: 10px;"/>
+                </content>
+            </ScrollPane>
+
+            <!-- 传输进度条（无传输时隐藏） -->
+            <HBox fx:id="transferRow" spacing="8" managed="false" visible="false"
+                  style="-fx-padding-top: 6px; -fx-alignment: center-left;">
+                <ProgressBar fx:id="transferBar" prefWidth="260" progress="0"/>
+                <Label fx:id="transferLabel" text="" style="-fx-text-fill: #555;"/>
+            </HBox>
 
             <!-- 输入区 -->
             <HBox spacing="8" style="-fx-padding-top: 8px;">
+                <Button fx:id="attachBtn" text="📎" style="-fx-background-color: #8e44ad; -fx-text-fill: white;"/>
                 <TextField fx:id="inputField" promptText="输入消息，Enter 发送..." HBox.hgrow="ALWAYS"/>
                 <Button fx:id="sendBtn" text="发送" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
             </HBox>

@@ -232,6 +232,30 @@ public final class SqlConstants {
             FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
         )""";
 
+    public static final String FILE_TRANSFER_INSERT = """
+        INSERT OR REPLACE INTO file_transfers
+        (transfer_id, conversation_id, contact_id, file_name, file_size,
+         saved_path, temp_path, sha256, chunk_size, total_chunks,
+         received_chunks, progress, speed, direction, status,
+         started_at, finished_at, last_error)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+
+    public static final String FILE_TRANSFER_UPDATE_PROGRESS = """
+        UPDATE file_transfers
+        SET received_chunks = ?, progress = ?, speed = ?
+        WHERE transfer_id = ?""";
+
+    public static final String FILE_TRANSFER_COMPLETE = """
+        UPDATE file_transfers
+        SET received_chunks = ?, progress = 100, saved_path = ?,
+            status = 'COMPLETED', finished_at = ?, speed = 0
+        WHERE transfer_id = ?""";
+
+    public static final String FILE_TRANSFER_FAIL = """
+        UPDATE file_transfers
+        SET status = 'FAILED', last_error = ?, finished_at = ?, speed = 0
+        WHERE transfer_id = ?""";
+
     // ═══════════════════════════════════════════════════════════
     // 3.7 groups — 群
     // ═══════════════════════════════════════════════════════════

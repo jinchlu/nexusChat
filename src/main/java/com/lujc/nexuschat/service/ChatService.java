@@ -39,8 +39,11 @@ public class ChatService {
     private String nickname;
     private int listenPort;
 
+    private final FileTransferService fileTransferService;
+
     private Consumer<IncomingText> onIncomingText;
     private Consumer<String> onStatusUpdate;
+    private Consumer<FileTransferService.FileEvent> onFileEvent;
 
     private enum State { DISCONNECTED, CONNECTING, CONNECTED }
     private State state = State.DISCONNECTED;
@@ -56,6 +59,11 @@ public class ChatService {
         this.nickname = cfgRepo.get("node.nickname").orElse("NexusChat User");
 
         this.node = new P2PNode(deviceId, nickname);
+        this.fileTransferService = new FileTransferService(deviceId, nickname,
+            ev -> {
+                Consumer<FileTransferService.FileEvent> h = this.onFileEvent;
+                if (h != null) h.accept(ev);
+            });
         registerFrameHandler();
     }
 
@@ -76,6 +84,20 @@ public class ChatService {
 
     public void setOnStatusUpdate(Consumer<String> handler) {
         this.onStatusUpdate = handler;
+    }
+
+    public void setOnFileEvent(Consumer<FileTransferService.FileEvent> handler) {
+        this.onFileEvent = handler;
+    }
+
+    /** 向指定好友发送文件/图片（内部按 64KB 分片 + 逐块 ACK）。 */
+    public void sendFile(String peerDeviceId, java.nio.file.Path file) {
+        PeerConnection conn = node.getConnection(peerDeviceId);
+        if (conn == null || conn.isClosed()) {
+            notifyStatus("对方不在线: " + peerDeviceId);
+            return;
+        }
+        fileTransferService.sendFile(conn, peerDeviceId, file);
     }
 
     /** 主动添加好友：连接对方 IP:Port → 发 HELLO → 处理 HELLO_ACK。 */
@@ -146,12 +168,15 @@ public class ChatService {
                 case TEXT -> handleText(conn, frame);
                 case ACK -> handleAck(frame);
                 case BYE -> handleBye(conn);
+                case FILE_META, FILE_CHUNK, FILE_ACK, FILE_DONE, CANCEL_TRANSFER ->
+                    fileTransferService.handleFrame(conn, frame);
                 default -> log.debug("暂未处理的消息类型: {}", frame.type());
             }
         });
 
         node.setOnDisconnect((conn, reason) -> {
             log.info("{} 断开: {}", conn, reason);
+            fileTransferService.onConnectionClosed(conn);
             virtualThread(() -> {
                 try {
                     new ContactRepository(DatabaseManager.getConnection())
@@ -214,6 +239,13 @@ public class ChatService {
                 Connection dbConn = DatabaseManager.getConnection();
                 new ContactRepository(dbConn).insertOrUpdate(peerDeviceId, peerNickname, conn.peerIp(), conn.peerPort());
                 new ContactRepository(dbConn).updateOnline(peerDeviceId, true);
+
+                // 本机主动发起，也要建私聊会话（file_transfers 有 conversation_id 外键）
+                String contactId = new ContactRepository(dbConn)
+                    .findByDeviceId(peerDeviceId).map(c -> c.id()).orElse(null);
+                if (contactId != null) {
+                    new ConversationRepository(dbConn).createPrivate(deviceId, peerDeviceId, contactId);
+                }
             } else {
                 int rejectCode = payload.has("rejectCode") ? payload.get("rejectCode").getAsInt() : 255;
                 HelloRejectCode code = HelloRejectCode.fromCode(rejectCode);
@@ -308,7 +340,14 @@ public class ChatService {
     }
 
     private void virtualThread(Runnable r) {
-        Thread.ofVirtual().start(r);
+        Thread.ofVirtual().start(() -> {
+            try {
+                r.run();
+            } finally {
+                // 任务结束释放本线程的 SQLite 连接，避免连接数无限增长
+                DatabaseManager.releaseCurrent();
+            }
+        });
     }
 
     public String deviceId() { return deviceId; }
