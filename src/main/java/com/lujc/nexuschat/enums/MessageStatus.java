@@ -1,4 +1,4 @@
-package com.nexuschat.enums;
+package com.lujc.nexuschat.enums;
 
 /**
  * 消息状态（存 messages.status 字段）。

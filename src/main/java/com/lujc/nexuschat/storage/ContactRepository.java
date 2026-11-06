@@ -1,6 +1,4 @@
-package com.nexuschat.storage;
-
-import com.nexuschat.util.DeviceIdGenerator;
+package com.lujc.nexuschat.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

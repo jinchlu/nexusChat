@@ -1,4 +1,4 @@
-package com.nexuschat.enums;
+package com.lujc.nexuschat.enums;
 
 /**
  * 协议消息类型 —— 与 ARCHITECTURE.md §3.2 保持一致。

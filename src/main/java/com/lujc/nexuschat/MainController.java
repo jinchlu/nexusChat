@@ -1,6 +1,8 @@
-package com.nexuschat;
+package com.lujc.nexuschat;
 
-import com.nexuschat.service.ChatService;
+import com.lujc.nexuschat.storage.ContactRepository;
+import com.lujc.nexuschat.storage.DatabaseManager;
+import com.lujc.nexuschat.service.ChatService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -117,8 +119,8 @@ public class MainController {
     private void refreshContactList() {
         Platform.runLater(() -> {
             contactList.getItems().clear();
-            try (var conn = com.nexuschat.storage.DatabaseManager.getConnection()) {
-                var repos = new com.nexuschat.storage.ContactRepository(conn);
+            try (var conn = DatabaseManager.getConnection()) {
+                var repos = new ContactRepository(conn);
                 for (var c : repos.findAll()) {
                     String onlineIcon = c.online() ? "●" : "○";
                     contactList.getItems().add(

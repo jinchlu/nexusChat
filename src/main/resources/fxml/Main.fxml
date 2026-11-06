@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.nexuschat.MainController"
+      fx:controller="com.lujc.nexuschat.MainController"
       prefHeight="600.0" prefWidth="900.0">
 
     <!-- 顶部状态栏 -->

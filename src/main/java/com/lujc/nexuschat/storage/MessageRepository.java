@@ -1,7 +1,7 @@
-package com.nexuschat.storage;
+package com.lujc.nexuschat.storage;
 
-import com.nexuschat.enums.MessageDirection;
-import com.nexuschat.enums.MessageStatus;
+import com.lujc.nexuschat.enums.MessageDirection;
+import com.lujc.nexuschat.enums.MessageStatus;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * messages 表 CRUD —— 天然 msgId 判重（PRIMARY KEY + INSERT OR IGNORE）。

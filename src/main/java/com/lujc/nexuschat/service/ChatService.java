@@ -1,23 +1,23 @@
-package com.nexuschat.service;
+package com.lujc.nexuschat.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.nexuschat.enums.HelloRejectCode;
-import com.nexuschat.enums.MessageDirection;
-import com.nexuschat.enums.MessageStatus;
-import com.nexuschat.enums.MessageType;
-import com.nexuschat.network.P2PNode;
-import com.nexuschat.network.PeerConnection;
-import com.nexuschat.protocol.Frame;
+import com.lujc.nexuschat.enums.HelloRejectCode;
+import com.lujc.nexuschat.enums.MessageDirection;
+import com.lujc.nexuschat.enums.MessageStatus;
+import com.lujc.nexuschat.enums.MessageType;
+import com.lujc.nexuschat.network.P2PNode;
+import com.lujc.nexuschat.network.PeerConnection;
+import com.lujc.nexuschat.protocol.Frame;
+import com.lujc.nexuschat.storage.*;
 import com.nexuschat.storage.*;
-import com.nexuschat.util.DeviceIdGenerator;
+import com.lujc.nexuschat.util.DeviceIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 

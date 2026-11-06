@@ -1,4 +1,4 @@
-package com.nexuschat.storage;
+package com.lujc.nexuschat.storage;
 
 /**
  * 所有 SQL 常量集中管理 —— 与 ARCHITECTURE.md §7.2 保持一致。

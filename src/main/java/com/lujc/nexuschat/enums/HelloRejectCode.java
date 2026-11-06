@@ -1,4 +1,4 @@
-package com.nexuschat.enums;
+package com.lujc.nexuschat.enums;
 
 /**
  * HELLO_ACK 拒绝码 —— 与 ARCHITECTURE.md §3.3 保持一致。

@@ -19,7 +19,7 @@
         <enablePreview>true</enablePreview>
         <javafx.version>25.0.1</javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
-        <main.class>com.nexuschat.NexusChatApp</main.class>
+        <main.class>com.lujc.nexuschat.NexusChatApp</main.class>
         <!-- 让 IntelliJ 读取 Maven 配置的 VM options -->
         <idea.executable.enable-preview>--enable-preview</idea.executable.enable-preview>
     </properties>
@@ -118,9 +118,6 @@
                 <version>3.5.0</version>
                 <configuration>
                     <mainClass>${main.class}</mainClass>
-                    <jvmArgs>
-                        <jvmArg>--enable-preview</jvmArg>
-                    </jvmArgs>
                 </configuration>
             </plugin>
 

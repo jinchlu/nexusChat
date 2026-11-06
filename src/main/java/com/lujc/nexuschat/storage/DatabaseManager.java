@@ -1,4 +1,4 @@
-package com.nexuschat.storage;
+package com.lujc.nexuschat.storage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

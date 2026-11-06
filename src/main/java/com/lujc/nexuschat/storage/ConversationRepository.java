@@ -1,4 +1,4 @@
-package com.nexuschat.storage;
+package com.lujc.nexuschat.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * conversations 表 CRUD —— 单聊/群聊统一一张表。

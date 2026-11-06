@@ -1,4 +1,4 @@
-package com.nexuschat.enums;
+package com.lujc.nexuschat.enums;
 
 /**
  * 消息方向（存 messages.direction 字段）。

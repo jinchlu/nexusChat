@@ -1,6 +1,6 @@
-package com.nexuschat.protocol;
+package com.lujc.nexuschat.protocol;
 
-import com.nexuschat.enums.MessageType;
+import com.lujc.nexuschat.enums.MessageType;
 
 /**
  * 协议帧 —— 与 ARCHITECTURE.md §3.1 保持一致。

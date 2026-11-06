@@ -1,6 +1,6 @@
-package com.nexuschat.protocol;
+package com.lujc.nexuschat.protocol;
 
-import com.nexuschat.enums.MessageType;
+import com.lujc.nexuschat.enums.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

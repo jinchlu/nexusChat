@@ -1,4 +1,4 @@
-package com.nexuschat.storage;
+package com.lujc.nexuschat.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,4 +1,4 @@
-package com.nexuschat.util;
+package com.lujc.nexuschat.util;
 
 import java.net.NetworkInterface;
 import java.security.MessageDigest;

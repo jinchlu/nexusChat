@@ -1,6 +1,6 @@
-package com.nexuschat.network;
+package com.lujc.nexuschat.network;
 
-import com.nexuschat.protocol.Frame;
+import com.lujc.nexuschat.protocol.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

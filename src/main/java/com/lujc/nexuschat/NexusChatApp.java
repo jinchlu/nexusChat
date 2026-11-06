@@ -1,4 +1,4 @@
-package com.nexuschat;
+package com.lujc.nexuschat;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nexuschat.service.ChatService;
+import com.lujc.nexuschat.service.ChatService;
 
 /**
  * JavaFX 入口 —— 与 ARCHITECTURE.md §6 模块设计保持一致。
