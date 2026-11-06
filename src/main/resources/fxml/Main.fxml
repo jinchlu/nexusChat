@@ -30,10 +30,12 @@
         <VBox HBox.hgrow="ALWAYS" style="-fx-padding: 10px;">
 
             <!-- 消息流：ScrollPane + VBox，支持文字 / 图片缩略图 / 文件卡片 -->
+            <!-- vbar 竖向滚动：内容超过可视高度时出现；hbar 横向滚动：窗口窄于内容最小宽度时出现 -->
             <ScrollPane fx:id="chatScroll" fitToWidth="true" VBox.vgrow="ALWAYS"
+                        vbarPolicy="AS_NEEDED" hbarPolicy="AS_NEEDED"
                         style="-fx-background: #fafafa; -fx-border-color: #dcdde1;">
                 <content>
-                    <VBox fx:id="messageBox" spacing="6" style="-fx-padding: 10px;"/>
+                    <VBox fx:id="messageBox" spacing="6" minWidth="460" style="-fx-padding: 10px;"/>
                 </content>
             </ScrollPane>
 
@@ -44,10 +46,12 @@
                 <Label fx:id="transferLabel" text="" style="-fx-text-fill: #555;"/>
             </HBox>
 
-            <!-- 输入区 -->
-            <HBox spacing="8" style="-fx-padding-top: 8px;">
+            <!-- 输入区：多行文本域，Enter 发送 / Shift+Enter 换行 -->
+            <HBox spacing="8" style="-fx-padding-top: 8px; -fx-alignment: bottom-left;">
                 <Button fx:id="attachBtn" text="📎" style="-fx-background-color: #8e44ad; -fx-text-fill: white;"/>
-                <TextField fx:id="inputField" promptText="输入消息，Enter 发送..." HBox.hgrow="ALWAYS"/>
+                <TextArea fx:id="inputField" promptText="输入消息，Enter 发送，Shift+Enter 换行"
+                          wrapText="true" prefRowCount="2" prefColumnCount="1" HBox.hgrow="ALWAYS"
+                          style="-fx-pref-height: 52px;"/>
                 <Button fx:id="sendBtn" text="发送" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
             </HBox>
         </VBox>

@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -39,7 +40,7 @@ public class MainController {
     @FXML private ListView<String> contactList; // 左侧联系人列表
     @FXML private ScrollPane chatScroll;        // 右侧消息滚动容器
     @FXML private VBox messageBox;              // 消息流
-    @FXML private TextField inputField;
+    @FXML private TextArea inputField;
     @FXML private Button sendBtn;
     @FXML private Button attachBtn;
     @FXML private Button addFriendBtn;
@@ -53,10 +54,11 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        inputField.setOnKeyPressed(e -> {
+        // 用事件过滤器抢先拦截 Enter，交给 handleSend；Shift+Enter 保持 TextArea 默认换行
+        inputField.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ENTER && !e.isShiftDown()) {
-                handleSend();
                 e.consume();
+                handleSend();
             }
         });
 
