@@ -102,7 +102,7 @@ public final class NexusChatApp {
 
             // 4. 配置场景 + 标题
             Scene scene = new Scene(root, 900, 600);
-            stage.setTitle("NexusChat v0.1.0");
+            stage.setTitle("NexusChat v" + com.lujc.nexuschat.service.ChatService.APP_VERSION);
             stage.setScene(scene);
             stage.setOnCloseRequest(e -> {
                 log.info("应用关闭");

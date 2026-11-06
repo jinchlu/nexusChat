@@ -7,7 +7,7 @@
 
     <groupId>com.nexuschat</groupId>
     <artifactId>nexuschat</artifactId>
-    <version>0.1.0</version>
+    <version>1.5.0</version>
     <packaging>jar</packaging>
     <name>NexusChat</name>
     <description>局域网内无中心 P2P 点对点聊天工具</description>

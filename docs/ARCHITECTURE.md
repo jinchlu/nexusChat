@@ -177,7 +177,7 @@ public enum MessageType {
 {
   "nickname": "Alice",
   "listenPort": 15000,
-  "version": "0.1.0",
+  "version": "1.5.0",
   "deviceId": "8f3a2c1b",
   "timestamp": 1730790000000
 }

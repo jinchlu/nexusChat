@@ -14,9 +14,9 @@ set -euo pipefail
 
 # ---------------- 变量区（按需修改） ----------------
 APP_NAME="NexusChat"
-# 打包版本号（仅用于 .app/.dmg 元数据，与 Maven 的 0.1.0 相互独立）。
-# macOS 的 CFBundleVersion 不允许首段为 0，所以默认用 1.0.0；可用 APP_VERSION=x.y.z 覆盖。
-APP_VERSION="${APP_VERSION:-1.0.0}"
+# 打包版本号（与 Maven 的 1.5.0 保持一致）。
+# macOS 的 CFBundleVersion 不允许首段为 0；可用 APP_VERSION=x.y.z 覆盖。
+APP_VERSION="${APP_VERSION:-1.5.0}"
 VENDOR="lujc"
 MAIN_CLASS="com.lujc.nexuschat.NexusChatApp"
 # 本项目实测需要的 JDK 模块：
@@ -56,7 +56,7 @@ DEST="release/${APP_NAME}-${APP_VERSION}-mac-${ARCH}"
 echo ">>> [1/5] Maven 编译打包（含依赖拷贝到 target/lib）"
 mvn -q clean package -DskipTests
 
-# 主 jar（nexuschat-0.1.0.jar），排除可能出现的 original-*.jar
+# 主 jar（nexuschat-1.5.0.jar），排除可能出现的 original-*.jar
 JAR="$(ls target/nexuschat-*.jar 2>/dev/null | grep -v original | head -1)"
 [ -f "$JAR" ] || { echo "错误：找不到主 jar，请先确认 mvn package 成功"; exit 1; }
 

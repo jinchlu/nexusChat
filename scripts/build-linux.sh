@@ -14,8 +14,8 @@ set -euo pipefail
 
 # ---------------- 变量区（按需修改） ----------------
 APP_NAME="NexusChat"
-# 打包版本号（仅用于安装包元数据，与 Maven 的 0.1.0 相互独立），可用 APP_VERSION=x.y.z 覆盖
-APP_VERSION="${APP_VERSION:-1.0.0}"
+# 打包版本号（与 Maven 的 1.5.0 保持一致），可用 APP_VERSION=x.y.z 覆盖
+APP_VERSION="${APP_VERSION:-1.5.0}"
 VENDOR="lujc"
 MAIN_CLASS="com.lujc.nexuschat.NexusChatApp"
 JDK_MODULES="java.desktop,java.scripting,java.xml,java.sql,java.logging,java.prefs,java.naming,java.management,jdk.unsupported"

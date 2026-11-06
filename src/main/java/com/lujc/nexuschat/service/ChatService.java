@@ -34,6 +34,9 @@ public class ChatService {
     private static final Logger log = LoggerFactory.getLogger(ChatService.class);
     private static final Gson GSON = new Gson();
 
+    /** 应用与协议版本，升级时与 pom.xml / 打包脚本 APP_VERSION 同步修改。 */
+    public static final String APP_VERSION = "1.5.0";
+
     private final P2PNode node;
     private final String deviceId;
     private String nickname;
@@ -112,7 +115,7 @@ public class ChatService {
                 JsonObject hello = new JsonObject();
                 hello.addProperty("nickname", this.nickname);
                 hello.addProperty("listenPort", this.listenPort);
-                hello.addProperty("version", "0.1.0");
+                hello.addProperty("version", APP_VERSION);
                 hello.addProperty("deviceId", this.deviceId);
                 hello.addProperty("timestamp", System.currentTimeMillis());
                 conn.send(Frame.of(MessageType.HELLO, GSON.toJson(hello)));
@@ -196,9 +199,17 @@ public class ChatService {
             String peerNickname = payload.get("nickname").getAsString();
             int peerListenPort = payload.get("listenPort").getAsInt();
             String peerIp = conn.peerIp();
+
+            // 版本强校验：不兼容直接拒绝，不落库、不建会话
+            String peerVersion = optString(payload, "version");
+            if (!versionCompatible(peerVersion)) {
+                rejectByVersion(conn, peerVersion);
+                return;
+            }
+
             conn.setPeerInfo(peerDeviceId, peerNickname);
 
-            log.info("收到 HELLO: {} ({}) from {}", peerNickname, peerDeviceId, peerIp);
+            log.info("收到 HELLO: {} ({}) version={} from {}", peerNickname, peerDeviceId, peerVersion, peerIp);
 
             Connection dbConn = DatabaseManager.getConnection();
             new ContactRepository(dbConn).insertOrUpdate(peerDeviceId, peerNickname, peerIp, peerListenPort);
@@ -214,6 +225,7 @@ public class ChatService {
             ack.addProperty("status", "ACCEPTED");
             ack.addProperty("nickname", this.nickname);
             ack.addProperty("deviceId", this.deviceId);
+            ack.addProperty("version", APP_VERSION);
             ack.addProperty("timestamp", System.currentTimeMillis());
             conn.send(Frame.of(MessageType.HELLO_ACK, GSON.toJson(ack)));
 
@@ -230,10 +242,21 @@ public class ChatService {
             String status = payload.get("status").getAsString();
 
             if ("ACCEPTED".equals(status)) {
+                // 主动发起方同样校验对端版本（老版本 HELLO_ACK 不含 version 字段，视为不兼容）
+                String peerVersion = optString(payload, "version");
+                if (!versionCompatible(peerVersion)) {
+                    String reason = "版本不兼容：本机 " + APP_VERSION
+                        + "，对方 " + (peerVersion == null ? "未知" : peerVersion);
+                    log.warn("拒绝 {} — {}", conn, reason);
+                    notifyStatus(reason);
+                    conn.close();
+                    return;
+                }
+
                 String peerDeviceId = payload.get("deviceId").getAsString();
                 String peerNickname = payload.get("nickname").getAsString();
                 conn.setPeerInfo(peerDeviceId, peerNickname);
-                log.info("HELLO_ACK ACCEPTED: {} ({})", peerNickname, peerDeviceId);
+                log.info("HELLO_ACK ACCEPTED: {} ({}) version={}", peerNickname, peerDeviceId, peerVersion);
                 notifyStatus(peerNickname + " 接受了连接");
 
                 Connection dbConn = DatabaseManager.getConnection();
@@ -300,6 +323,50 @@ public class ChatService {
     }
 
     // ── 工具方法 ──
+
+    /** 回送 VERSION_MISMATCH 并断开，不作任何落库。 */
+    private void rejectByVersion(PeerConnection conn, String peerVersion) {
+        String reason = "版本不兼容：本机 " + APP_VERSION
+            + "，对方 " + (peerVersion == null ? "未知" : peerVersion);
+        log.warn("拒绝 {} — {}", conn, reason);
+
+        JsonObject ack = new JsonObject();
+        ack.addProperty("status", "REJECTED");
+        ack.addProperty("rejectCode", HelloRejectCode.VERSION_MISMATCH.code());
+        ack.addProperty("reason", reason);
+        ack.addProperty("version", APP_VERSION);
+        ack.addProperty("deviceId", deviceId);
+        ack.addProperty("timestamp", System.currentTimeMillis());
+        try {
+            conn.send(Frame.of(MessageType.HELLO_ACK, GSON.toJson(ack)));
+        } catch (Exception e) {
+            log.debug("回送版本拒绝 ACK 失败: {}", e.getMessage());
+        }
+        conn.close();
+        notifyStatus(reason);
+    }
+
+    /** 兼容策略：主版本 + 次版本一致即可互通（1.5.x ↔ 1.5.y），缺失或格式非法一律视为不兼容。 */
+    private static boolean versionCompatible(String peerVersion) {
+        if (peerVersion == null) return false;
+        int[] mine = parseMajorMinor(APP_VERSION);
+        int[] theirs = parseMajorMinor(peerVersion);
+        return mine != null && theirs != null && mine[0] == theirs[0] && mine[1] == theirs[1];
+    }
+
+    private static int[] parseMajorMinor(String version) {
+        String[] parts = version.trim().split("\\.");
+        if (parts.length < 2) return null;
+        try {
+            return new int[]{Integer.parseInt(parts[0]), Integer.parseInt(parts[1])};
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private static String optString(JsonObject o, String key) {
+        return o.has(key) && !o.get(key).isJsonNull() ? o.get(key).getAsString() : null;
+    }
 
     private void saveLocalMessage(String msgId, String peerDeviceId, String content,
                                    MessageDirection direction, MessageStatus status) {
